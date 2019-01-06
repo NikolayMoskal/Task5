@@ -8,6 +8,8 @@ namespace BusinessLayer
     public class CsvFileWatcher
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private readonly FileHandler _handler;
+        private readonly ReaderWriterLockSlim _locker;
         private readonly FileSystemWatcher _watcher;
         private bool _isEnabled;
 
@@ -18,6 +20,8 @@ namespace BusinessLayer
                 Filter = "*.csv"
             };
             _isEnabled = true;
+            _locker = new ReaderWriterLockSlim();
+            _handler = new FileHandler(new CsvParser());
         }
 
         public void StartWatch()
@@ -36,8 +40,8 @@ namespace BusinessLayer
 
         private void OnCreated(object sender, FileSystemEventArgs args)
         {
-            var handler = new FileHandler(args.FullPath, new CsvParser());
-            var thread = new Thread(handler.StartHandle);
+            _handler.FileName = args.FullPath;
+            var thread = new Thread(_handler.StartHandle);
             thread.Start();
         }
     }

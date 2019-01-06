@@ -15,19 +15,16 @@ namespace DataAccessLayer.Entities.Mappings
             }));
             ManyToOne(x => x.Client, c =>
             {
-                c.Cascade(Cascade.Persist);
                 c.Column("Client_Id");
                 c.NotNullable(true);
             });
             ManyToOne(x => x.Employee, c =>
             {
-                c.Cascade(Cascade.Persist);
                 c.Column("Employee_Id");
                 c.NotNullable(true);
             });
             ManyToOne(x => x.Product, c =>
             {
-                c.Cascade(Cascade.Persist);
                 c.Column("Product_Id");
                 c.NotNullable(true);
             });

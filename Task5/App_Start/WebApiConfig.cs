@@ -1,4 +1,5 @@
 ﻿using System.Web.Http;
+using System.Web.Http.Cors;
 
 namespace Task5
 {
@@ -6,15 +7,18 @@ namespace Task5
     {
         public static void Register(HttpConfiguration config)
         {
-            // Конфигурация и службы веб-API
-
-            // Маршруты веб-API
+            config.EnableCors(new EnableCorsAttribute("http://localhost:4200", "*", "*"));
+            config.Formatters.Add(new CustomJsonFormatter());
             config.MapHttpAttributeRoutes();
-
             config.Routes.MapHttpRoute(
                 "DefaultApi",
-                "api/{controller}/{id}",
-                new {id = RouteParameter.Optional}
+                "api/{controller}/{action}",
+                new {controller = "Home", action = "Index"}
+            );
+            config.Routes.MapHttpRoute(
+                "IndexPath",
+                "",
+                new {controller = "Home", action = "Index"}
             );
         }
     }

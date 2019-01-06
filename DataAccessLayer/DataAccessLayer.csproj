@@ -84,10 +84,11 @@
         <Compile Include="Repositories\EmployeeRepository.cs"/>
         <Compile Include="Repositories\ProductRepository.cs"/>
         <Compile Include="Repositories\Repository.cs"/>
-        <Compile Include="Repositories\UnitOfWork.cs"/>
     </ItemGroup>
     <ItemGroup>
-        <None Include="NLog.config"/>
+        <None Include="NLog.config">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
         <None Include="NLog.xsd"/>
         <None Include="packages.config"/>
     </ItemGroup>

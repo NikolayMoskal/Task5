@@ -1,8 +1,9 @@
 using System;
 using DataAccessLayer.Configurations;
+using DataAccessLayer.Repositories;
 using NHibernate;
 
-namespace DataAccessLayer.Repositories
+namespace BusinessLayer.UnitsOfWork
 {
     public class UnitOfWork : IDisposable
     {
