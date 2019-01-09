@@ -7,10 +7,10 @@ namespace BusinessLayer.Models
     {
         [JsonProperty("date")] public DateTime Date { get; set; }
 
-        [JsonProperty("client")] public ClientModel Client { get; set; }
+        [JsonIgnore] public ClientModel Client { get; set; }
 
-        [JsonProperty("employee")] public EmployeeModel Employee { get; set; }
+        [JsonIgnore] public EmployeeModel Employee { get; set; }
 
-        [JsonProperty("product")] public ProductModel Product { get; set; }
+        [JsonIgnore] public ProductModel Product { get; set; }
     }
 }

@@ -9,6 +9,6 @@ namespace BusinessLayer.Models
 
         [JsonProperty("price")] public double Price { get; set; }
 
-        [JsonIgnore] public IList<BookingModel> Bookings { get; set; }
+        [JsonProperty("bookings")] public IList<BookingModel> Bookings { get; set; }
     }
 }
