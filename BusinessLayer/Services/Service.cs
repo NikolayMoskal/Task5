@@ -18,7 +18,7 @@ namespace BusinessLayer.Services
 
         public abstract TEntity GetOne(int id);
 
-        public abstract void Save(TEntity entity);
+        public abstract TEntity Save(TEntity entity);
 
         public abstract void Delete(TEntity entity);
 

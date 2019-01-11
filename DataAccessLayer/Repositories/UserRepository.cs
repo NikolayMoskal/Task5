@@ -6,18 +6,18 @@ using NHibernate;
 
 namespace DataAccessLayer.Repositories
 {
-    public class BookingRepository : Repository<Booking>
+    public class UserRepository : Repository<User>
     {
-        public BookingRepository(ISession session) : base(session)
+        public UserRepository(ISession session) : base(session)
         {
         }
 
-        public override IEnumerable<Booking> GetAll()
+        public override IEnumerable<User> GetAll()
         {
             try
             {
-                return Session.CreateQuery("from Booking")
-                    .List<Booking>();
+                return Session.CreateQuery("from User")
+                    .List<User>();
             }
             catch (Exception e)
             {
@@ -31,7 +31,7 @@ namespace DataAccessLayer.Repositories
         {
             try
             {
-                Session.CreateQuery("delete Booking")
+                Session.CreateQuery("delete User")
                     .ExecuteUpdate();
             }
             catch (Exception e)
@@ -40,13 +40,17 @@ namespace DataAccessLayer.Repositories
             }
         }
 
-        public override bool Exists(Booking item, out Booking foundItem)
+        public override bool Exists(User item, out User foundItem)
         {
             try
             {
-                var list = Session.CreateQuery(@"from Booking t where t.Id = :id")
-                    .SetParameter("id", item.Id)
-                    .List<Booking>();
+                var list = Session.CreateQuery(@"from User o where o.FirstName = :firstName" +
+                                               @" and o.LastName = :lastName" +
+                                               @" and o.BirthDate = :date")
+                    .SetParameter("firstName", item.FirstName)
+                    .SetParameter("lastName", item.LastName)
+                    .SetParameter("date", item.BirthDate)
+                    .List<User>();
                 if (list.Count != 0)
                 {
                     item.Id = list.First().Id;

@@ -28,19 +28,13 @@ namespace BusinessLayer
                         uow.BeginTransaction();
                         var client = new Client {Name = line.ClientName};
                         uow.ClientRepository.Save(client);
-                        uow.CommitTransaction();
 
-                        uow.BeginTransaction();
                         var employee = new Employee {Name = line.EmployeeName};
                         uow.EmployeeRepository.Save(employee);
-                        uow.CommitTransaction();
 
-                        uow.BeginTransaction();
                         var product = new Product {Name = line.ProductName, Price = line.ProductSum};
                         uow.ProductRepository.Save(product);
-                        uow.CommitTransaction();
 
-                        uow.BeginTransaction();
                         var booking = new Booking
                         {
                             Date = line.Date,
@@ -49,7 +43,6 @@ namespace BusinessLayer
                             Product = product
                         };
                         uow.BookingRepository.Save(booking);
-                        uow.CommitTransaction();
                     }
                     catch
                     {

@@ -6,18 +6,18 @@ using NHibernate;
 
 namespace DataAccessLayer.Repositories
 {
-    public class BookingRepository : Repository<Booking>
+    public class RoleRepository : Repository<Role>
     {
-        public BookingRepository(ISession session) : base(session)
+        public RoleRepository(ISession session) : base(session)
         {
         }
 
-        public override IEnumerable<Booking> GetAll()
+        public override IEnumerable<Role> GetAll()
         {
             try
             {
-                return Session.CreateQuery("from Booking")
-                    .List<Booking>();
+                return Session.CreateQuery("from Role")
+                    .List<Role>();
             }
             catch (Exception e)
             {
@@ -31,7 +31,7 @@ namespace DataAccessLayer.Repositories
         {
             try
             {
-                Session.CreateQuery("delete Booking")
+                Session.CreateQuery("delete Role")
                     .ExecuteUpdate();
             }
             catch (Exception e)
@@ -40,13 +40,13 @@ namespace DataAccessLayer.Repositories
             }
         }
 
-        public override bool Exists(Booking item, out Booking foundItem)
+        public override bool Exists(Role item, out Role foundItem)
         {
             try
             {
-                var list = Session.CreateQuery(@"from Booking t where t.Id = :id")
-                    .SetParameter("id", item.Id)
-                    .List<Booking>();
+                var list = Session.CreateQuery(@"from Role o where o.RoleName = :roleName")
+                    .SetParameter("roleName", item.RoleName)
+                    .List<Role>();
                 if (list.Count != 0)
                 {
                     item.Id = list.First().Id;

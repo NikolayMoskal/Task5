@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using DataAccessLayer.Entities;
 using NHibernate;
+using NLog;
 
 namespace DataAccessLayer.Repositories
 {
@@ -11,6 +12,7 @@ namespace DataAccessLayer.Repositories
     /// <typeparam name="TEntity">The entity type for existing table in DB</typeparam>
     public class Repository<TEntity> where TEntity : Entity, new()
     {
+        protected readonly Logger Logger = LogManager.GetCurrentClassLogger();
         protected readonly ISession Session;
 
         public Repository(ISession session)
@@ -25,21 +27,44 @@ namespace DataAccessLayer.Repositories
 
         public virtual TEntity GetOne(int id)
         {
-            return Session.Load<TEntity>(id);
+            try
+            {
+                return Session.Load<TEntity>(id);
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e);
+            }
+
+            return null;
         }
 
-        public virtual void Save(TEntity item)
+        public virtual TEntity Save(TEntity item)
         {
-            if (!Exists(item, out var foundItem))
-                Session.SaveOrUpdate(item);
-            //Session.Merge(item);
-            else
-                item = foundItem;
+            try
+            {
+                if (!Exists(item, out var foundItem))
+                    Session.SaveOrUpdate(item);
+                return item;
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e);
+            }
+
+            return null;
         }
 
         public virtual void Delete(TEntity item)
         {
-            Session.Delete(item);
+            try
+            {
+                Session.Delete(item);
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e);
+            }
         }
 
         public virtual void DeleteAll()

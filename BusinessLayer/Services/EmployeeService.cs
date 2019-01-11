@@ -18,24 +18,32 @@ namespace BusinessLayer.Services
 
         public override IEnumerable<EmployeeModel> GetAll()
         {
+            Mapper.Reset();
             Mapper.Initialize(c => c.CreateMap<Employee, EmployeeModel>());
             return Mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeModel>>(_repository.GetAll());
         }
 
         public override EmployeeModel GetOne(int id)
         {
+            Mapper.Reset();
             Mapper.Initialize(c => c.CreateMap<Employee, EmployeeModel>());
             return Mapper.Map<Employee, EmployeeModel>(_repository.GetOne(id));
         }
 
-        public override void Save(EmployeeModel entity)
+        public override EmployeeModel Save(EmployeeModel entity)
         {
+            Mapper.Reset();
             Mapper.Initialize(c => c.CreateMap<EmployeeModel, Employee>());
-            _repository.Save(Mapper.Map<EmployeeModel, Employee>(entity));
+            var item = Mapper.Map<EmployeeModel, Employee>(entity);
+
+            Mapper.Reset();
+            Mapper.Initialize(c => c.CreateMap<Employee, EmployeeModel>());
+            return Mapper.Map<Employee, EmployeeModel>(_repository.Save(item));
         }
 
         public override void Delete(EmployeeModel entity)
         {
+            Mapper.Reset();
             Mapper.Initialize(c => c.CreateMap<EmployeeModel, Employee>());
             _repository.Delete(Mapper.Map<EmployeeModel, Employee>(entity));
         }

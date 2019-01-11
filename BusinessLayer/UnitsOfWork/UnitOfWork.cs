@@ -8,13 +8,16 @@ namespace BusinessLayer.UnitsOfWork
     public class UnitOfWork : IDisposable
     {
         private readonly bool _isPassedSession;
+        private AccountRepository _accountRepository;
         private BookingRepository _bookingRepository;
         private ClientRepository _clientRepository;
         private EmployeeRepository _employeeRepository;
         private bool _isDisposed;
         private ProductRepository _productRepository;
+        private RoleRepository _roleRepository;
         private ISession _session;
         private ITransaction _transaction;
+        private UserRepository _userRepository;
 
         public UnitOfWork()
         {
@@ -45,6 +48,15 @@ namespace BusinessLayer.UnitsOfWork
 
         public BookingRepository BookingRepository =>
             _bookingRepository ?? (_bookingRepository = new BookingRepository(_session));
+
+        public UserRepository UserRepository =>
+            _userRepository ?? (_userRepository = new UserRepository(_session));
+
+        public AccountRepository AccountRepository =>
+            _accountRepository ?? (_accountRepository = new AccountRepository(_session));
+
+        public RoleRepository RoleRepository =>
+            _roleRepository ?? (_roleRepository = new RoleRepository(_session));
 
         public void Dispose()
         {

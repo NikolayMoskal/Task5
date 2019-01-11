@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DataAccessLayer.Entities;
@@ -13,26 +14,49 @@ namespace DataAccessLayer.Repositories
 
         public override IEnumerable<Product> GetAll()
         {
-            return Session.CreateQuery("from Product")
-                .List<Product>();
+            try
+            {
+                return Session.CreateQuery("from Product")
+                    .List<Product>();
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e);
+            }
+
+            return null;
         }
 
         public override void DeleteAll()
         {
-            Session.CreateQuery("delete Product")
-                .ExecuteUpdate();
+            try
+            {
+                Session.CreateQuery("delete Product")
+                    .ExecuteUpdate();
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e);
+            }
         }
 
         public override bool Exists(Product item, out Product foundItem)
         {
-            var list = Session.CreateQuery(@"from Product o where o.Name = :productName")
-                .SetParameter("productName", item.Name)
-                .List<Product>();
-            if (list.Count != 0)
+            try
             {
-                item.Id = list.First().Id;
-                foundItem = item;
-                return true;
+                var list = Session.CreateQuery(@"from Product o where o.Name = :productName")
+                    .SetParameter("productName", item.Name)
+                    .List<Product>();
+                if (list.Count != 0)
+                {
+                    item.Id = list.First().Id;
+                    foundItem = item;
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e);
             }
 
             foundItem = null;

@@ -30,11 +30,15 @@ namespace BusinessLayer.Services
             return Mapper.Map<Client, ClientModel>(_repository.GetOne(id));
         }
 
-        public override void Save(ClientModel entity)
+        public override ClientModel Save(ClientModel entity)
         {
             Mapper.Reset();
             Mapper.Initialize(c => c.CreateMap<ClientModel, Client>());
-            _repository.Save(Mapper.Map<ClientModel, Client>(entity));
+            var item = Mapper.Map<ClientModel, Client>(entity);
+
+            Mapper.Reset();
+            Mapper.Initialize(c => c.CreateMap<Client, ClientModel>());
+            return Mapper.Map<Client, ClientModel>(_repository.Save(item));
         }
 
         public override void Delete(ClientModel entity)

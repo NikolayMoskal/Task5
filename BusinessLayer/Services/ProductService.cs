@@ -18,24 +18,32 @@ namespace BusinessLayer.Services
 
         public override IEnumerable<ProductModel> GetAll()
         {
+            Mapper.Reset();
             Mapper.Initialize(c => c.CreateMap<Product, ProductModel>());
             return Mapper.Map<IEnumerable<Product>, IEnumerable<ProductModel>>(_repository.GetAll());
         }
 
         public override ProductModel GetOne(int id)
         {
+            Mapper.Reset();
             Mapper.Initialize(c => c.CreateMap<Product, ProductModel>());
             return Mapper.Map<Product, ProductModel>(_repository.GetOne(id));
         }
 
-        public override void Save(ProductModel entity)
+        public override ProductModel Save(ProductModel entity)
         {
+            Mapper.Reset();
             Mapper.Initialize(c => c.CreateMap<ProductModel, Product>());
-            _repository.Save(Mapper.Map<ProductModel, Product>(entity));
+            var item = Mapper.Map<ProductModel, Product>(entity);
+
+            Mapper.Reset();
+            Mapper.Initialize(c => c.CreateMap<Product, ProductModel>());
+            return Mapper.Map<Product, ProductModel>(_repository.Save(item));
         }
 
         public override void Delete(ProductModel entity)
         {
+            Mapper.Reset();
             Mapper.Initialize(c => c.CreateMap<ProductModel, Product>());
             _repository.Delete(Mapper.Map<ProductModel, Product>(entity));
         }

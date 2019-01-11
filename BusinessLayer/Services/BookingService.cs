@@ -18,24 +18,32 @@ namespace BusinessLayer.Services
 
         public override IEnumerable<BookingModel> GetAll()
         {
+            Mapper.Reset();
             Mapper.Initialize(c => c.CreateMap<Booking, BookingModel>());
             return Mapper.Map<IEnumerable<Booking>, IEnumerable<BookingModel>>(_repository.GetAll());
         }
 
         public override BookingModel GetOne(int id)
         {
+            Mapper.Reset();
             Mapper.Initialize(c => c.CreateMap<Booking, BookingModel>());
             return Mapper.Map<Booking, BookingModel>(_repository.GetOne(id));
         }
 
-        public override void Save(BookingModel entity)
+        public override BookingModel Save(BookingModel entity)
         {
+            Mapper.Reset();
             Mapper.Initialize(c => c.CreateMap<BookingModel, Booking>());
-            _repository.Save(Mapper.Map<BookingModel, Booking>(entity));
+            var model = Mapper.Map<BookingModel, Booking>(entity);
+
+            Mapper.Reset();
+            Mapper.Initialize(c => c.CreateMap<Booking, BookingModel>());
+            return Mapper.Map<Booking, BookingModel>(_repository.Save(model));
         }
 
         public override void Delete(BookingModel entity)
         {
+            Mapper.Reset();
             Mapper.Initialize(c => c.CreateMap<BookingModel, Booking>());
             _repository.Delete(Mapper.Map<BookingModel, Booking>(entity));
         }

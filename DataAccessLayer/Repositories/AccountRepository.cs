@@ -6,18 +6,18 @@ using NHibernate;
 
 namespace DataAccessLayer.Repositories
 {
-    public class BookingRepository : Repository<Booking>
+    public class AccountRepository : Repository<Account>
     {
-        public BookingRepository(ISession session) : base(session)
+        public AccountRepository(ISession session) : base(session)
         {
         }
 
-        public override IEnumerable<Booking> GetAll()
+        public override IEnumerable<Account> GetAll()
         {
             try
             {
-                return Session.CreateQuery("from Booking")
-                    .List<Booking>();
+                return Session.CreateQuery("from Account")
+                    .List<Account>();
             }
             catch (Exception e)
             {
@@ -31,7 +31,7 @@ namespace DataAccessLayer.Repositories
         {
             try
             {
-                Session.CreateQuery("delete Booking")
+                Session.CreateQuery("delete Account")
                     .ExecuteUpdate();
             }
             catch (Exception e)
@@ -40,13 +40,15 @@ namespace DataAccessLayer.Repositories
             }
         }
 
-        public override bool Exists(Booking item, out Booking foundItem)
+        public override bool Exists(Account item, out Account foundItem)
         {
             try
             {
-                var list = Session.CreateQuery(@"from Booking t where t.Id = :id")
-                    .SetParameter("id", item.Id)
-                    .List<Booking>();
+                var list = Session.CreateQuery(@"from Account o where o.UserName = :userName" +
+                                               @" and o.PasswordHash = :hash")
+                    .SetParameter("userName", item.UserName)
+                    .SetParameter("hash", item.PasswordHash)
+                    .List<Account>();
                 if (list.Count != 0)
                 {
                     item.Id = list.First().Id;
