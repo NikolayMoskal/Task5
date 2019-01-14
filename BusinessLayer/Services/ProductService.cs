@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
+using BusinessLayer.Filters;
 using BusinessLayer.Models;
 using BusinessLayer.UnitsOfWork;
 using DataAccessLayer.Entities;
@@ -16,41 +18,39 @@ namespace BusinessLayer.Services
             _repository = UnitOfWork.ProductRepository;
         }
 
-        public override IEnumerable<ProductModel> GetAll()
+        public override IEnumerable<ProductModel> GetAll(Filter filter = null)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<Product, ProductModel>());
-            return Mapper.Map<IEnumerable<Product>, IEnumerable<ProductModel>>(_repository.GetAll());
+            if (filter == null) filter = new Filter();
+
+            var mapper = new MapperConfiguration(c => c.CreateMap<Product, ProductModel>()).CreateMapper();
+            return mapper.Map<IEnumerable<Product>, IEnumerable<ProductModel>>(_repository.GetAll())
+                .Where(filter.IsValid).ToList();
         }
 
         public override ProductModel GetOne(int id)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<Product, ProductModel>());
-            return Mapper.Map<Product, ProductModel>(_repository.GetOne(id));
+            var mapper = new MapperConfiguration(c => c.CreateMap<Product, ProductModel>()).CreateMapper();
+            return mapper.Map<Product, ProductModel>(_repository.GetOne(id));
         }
 
         public override ProductModel Save(ProductModel entity)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<ProductModel, Product>());
-            var item = Mapper.Map<ProductModel, Product>(entity);
+            var mapper = new MapperConfiguration(c => c.CreateMap<ProductModel, Product>()).CreateMapper();
+            var item = mapper.Map<ProductModel, Product>(entity);
 
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<Product, ProductModel>());
-            return Mapper.Map<Product, ProductModel>(_repository.Save(item));
+            mapper = new MapperConfiguration(c => c.CreateMap<Product, ProductModel>()).CreateMapper();
+            return mapper.Map<Product, ProductModel>(_repository.Save(item));
         }
 
-        public override void Delete(ProductModel entity)
+        public override bool Delete(ProductModel entity)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<ProductModel, Product>());
-            _repository.Delete(Mapper.Map<ProductModel, Product>(entity));
+            var mapper = new MapperConfiguration(c => c.CreateMap<ProductModel, Product>()).CreateMapper();
+            return _repository.Delete(mapper.Map<ProductModel, Product>(entity));
         }
 
-        public override void DeleteAll()
+        public override bool DeleteAll()
         {
-            _repository.DeleteAll();
+            return _repository.DeleteAll();
         }
     }
 }

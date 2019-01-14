@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
+using BusinessLayer.Filters;
 using BusinessLayer.Models;
 using BusinessLayer.UnitsOfWork;
 using DataAccessLayer.Entities;
@@ -16,41 +18,39 @@ namespace BusinessLayer.Services
             _repository = UnitOfWork.BookingRepository;
         }
 
-        public override IEnumerable<BookingModel> GetAll()
+        public override IEnumerable<BookingModel> GetAll(Filter filter = null)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<Booking, BookingModel>());
-            return Mapper.Map<IEnumerable<Booking>, IEnumerable<BookingModel>>(_repository.GetAll());
+            if (filter == null) filter = new Filter();
+
+            var mapper = new MapperConfiguration(c => c.CreateMap<Booking, BookingModel>()).CreateMapper();
+            return mapper.Map<IEnumerable<Booking>, IEnumerable<BookingModel>>(_repository.GetAll())
+                .Where(filter.IsValid).ToList();
         }
 
         public override BookingModel GetOne(int id)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<Booking, BookingModel>());
-            return Mapper.Map<Booking, BookingModel>(_repository.GetOne(id));
+            var mapper = new MapperConfiguration(c => c.CreateMap<Booking, BookingModel>()).CreateMapper();
+            return mapper.Map<Booking, BookingModel>(_repository.GetOne(id));
         }
 
         public override BookingModel Save(BookingModel entity)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<BookingModel, Booking>());
-            var model = Mapper.Map<BookingModel, Booking>(entity);
+            var mapper = new MapperConfiguration(c => c.CreateMap<BookingModel, Booking>()).CreateMapper();
+            var model = mapper.Map<BookingModel, Booking>(entity);
 
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<Booking, BookingModel>());
-            return Mapper.Map<Booking, BookingModel>(_repository.Save(model));
+            mapper = new MapperConfiguration(c => c.CreateMap<Booking, BookingModel>()).CreateMapper();
+            return mapper.Map<Booking, BookingModel>(_repository.Save(model));
         }
 
-        public override void Delete(BookingModel entity)
+        public override bool Delete(BookingModel entity)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<BookingModel, Booking>());
-            _repository.Delete(Mapper.Map<BookingModel, Booking>(entity));
+            var mapper = new MapperConfiguration(c => c.CreateMap<BookingModel, Booking>()).CreateMapper();
+            return _repository.Delete(mapper.Map<BookingModel, Booking>(entity));
         }
 
-        public override void DeleteAll()
+        public override bool DeleteAll()
         {
-            _repository.DeleteAll();
+            return _repository.DeleteAll();
         }
     }
 }

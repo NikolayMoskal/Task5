@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
+using BusinessLayer.Filters;
 using BusinessLayer.Models;
 using BusinessLayer.UnitsOfWork;
 using DataAccessLayer.Entities;
@@ -16,41 +18,39 @@ namespace BusinessLayer.Services
             _repository = UnitOfWork.EmployeeRepository;
         }
 
-        public override IEnumerable<EmployeeModel> GetAll()
+        public override IEnumerable<EmployeeModel> GetAll(Filter filter = null)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<Employee, EmployeeModel>());
-            return Mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeModel>>(_repository.GetAll());
+            if (filter == null) filter = new Filter();
+
+            var mapper = new MapperConfiguration(c => c.CreateMap<Employee, EmployeeModel>()).CreateMapper();
+            return mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeModel>>(_repository.GetAll())
+                .Where(filter.IsValid).ToList();
         }
 
         public override EmployeeModel GetOne(int id)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<Employee, EmployeeModel>());
-            return Mapper.Map<Employee, EmployeeModel>(_repository.GetOne(id));
+            var mapper = new MapperConfiguration(c => c.CreateMap<Employee, EmployeeModel>()).CreateMapper();
+            return mapper.Map<Employee, EmployeeModel>(_repository.GetOne(id));
         }
 
         public override EmployeeModel Save(EmployeeModel entity)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<EmployeeModel, Employee>());
-            var item = Mapper.Map<EmployeeModel, Employee>(entity);
+            var mapper = new MapperConfiguration(c => c.CreateMap<EmployeeModel, Employee>()).CreateMapper();
+            var item = mapper.Map<EmployeeModel, Employee>(entity);
 
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<Employee, EmployeeModel>());
-            return Mapper.Map<Employee, EmployeeModel>(_repository.Save(item));
+            mapper = new MapperConfiguration(c => c.CreateMap<Employee, EmployeeModel>()).CreateMapper();
+            return mapper.Map<Employee, EmployeeModel>(_repository.Save(item));
         }
 
-        public override void Delete(EmployeeModel entity)
+        public override bool Delete(EmployeeModel entity)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<EmployeeModel, Employee>());
-            _repository.Delete(Mapper.Map<EmployeeModel, Employee>(entity));
+            var mapper = new MapperConfiguration(c => c.CreateMap<EmployeeModel, Employee>()).CreateMapper();
+            return _repository.Delete(mapper.Map<EmployeeModel, Employee>(entity));
         }
 
-        public override void DeleteAll()
+        public override bool DeleteAll()
         {
-            _repository.DeleteAll();
+            return _repository.DeleteAll();
         }
     }
 }

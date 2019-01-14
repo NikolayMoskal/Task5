@@ -7,6 +7,6 @@ namespace BusinessLayer.Models
     {
         [JsonProperty("name")] public string Name { get; set; }
 
-        [JsonProperty("bookings")] public IList<BookingModel> Bookings { get; set; }
+        [JsonIgnore] public IList<BookingModel> Bookings { get; set; }
     }
 }

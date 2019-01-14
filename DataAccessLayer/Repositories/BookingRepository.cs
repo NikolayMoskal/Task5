@@ -27,17 +27,19 @@ namespace DataAccessLayer.Repositories
             return null;
         }
 
-        public override void DeleteAll()
+        public override bool DeleteAll()
         {
             try
             {
-                Session.CreateQuery("delete Booking")
-                    .ExecuteUpdate();
+                return Session.CreateQuery("delete Booking")
+                           .ExecuteUpdate() > 0;
             }
             catch (Exception e)
             {
                 Logger.Error(e);
             }
+
+            return false;
         }
 
         public override bool Exists(Booking item, out Booking foundItem)

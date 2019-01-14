@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
+using BusinessLayer.Filters;
 using BusinessLayer.Models;
 using BusinessLayer.UnitsOfWork;
 using DataAccessLayer.Entities;
@@ -16,41 +18,39 @@ namespace BusinessLayer.Services
             _roleRepository = UnitOfWork.RoleRepository;
         }
 
-        public override IEnumerable<RoleModel> GetAll()
+        public override IEnumerable<RoleModel> GetAll(Filter filter = null)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<Role, RoleModel>());
-            return Mapper.Map<IEnumerable<Role>, IEnumerable<RoleModel>>(_roleRepository.GetAll());
+            if (filter == null) filter = new Filter();
+
+            var mapper = new MapperConfiguration(c => c.CreateMap<Role, RoleModel>()).CreateMapper();
+            return mapper.Map<IEnumerable<Role>, IEnumerable<RoleModel>>(_roleRepository.GetAll())
+                .Where(filter.IsValid).ToList();
         }
 
         public override RoleModel GetOne(int id)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<Role, RoleModel>());
-            return Mapper.Map<Role, RoleModel>(_roleRepository.GetOne(id));
+            var mapper = new MapperConfiguration(c => c.CreateMap<Role, RoleModel>()).CreateMapper();
+            return mapper.Map<Role, RoleModel>(_roleRepository.GetOne(id));
         }
 
         public override RoleModel Save(RoleModel entity)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<RoleModel, Role>());
-            var item = Mapper.Map<RoleModel, Role>(entity);
+            var mapper = new MapperConfiguration(c => c.CreateMap<RoleModel, Role>()).CreateMapper();
+            var item = mapper.Map<RoleModel, Role>(entity);
 
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<Role, RoleModel>());
-            return Mapper.Map<Role, RoleModel>(_roleRepository.Save(item));
+            mapper = new MapperConfiguration(c => c.CreateMap<Role, RoleModel>()).CreateMapper();
+            return mapper.Map<Role, RoleModel>(_roleRepository.Save(item));
         }
 
-        public override void Delete(RoleModel entity)
+        public override bool Delete(RoleModel entity)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<RoleModel, Role>());
-            _roleRepository.Delete(Mapper.Map<RoleModel, Role>(entity));
+            var mapper = new MapperConfiguration(c => c.CreateMap<RoleModel, Role>()).CreateMapper();
+            return _roleRepository.Delete(mapper.Map<RoleModel, Role>(entity));
         }
 
-        public override void DeleteAll()
+        public override bool DeleteAll()
         {
-            _roleRepository.DeleteAll();
+            return _roleRepository.DeleteAll();
         }
     }
 }

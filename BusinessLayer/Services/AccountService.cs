@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
+using BusinessLayer.Filters;
 using BusinessLayer.Models;
 using BusinessLayer.UnitsOfWork;
 using DataAccessLayer.Entities;
@@ -16,49 +18,50 @@ namespace BusinessLayer.Services
             _accountRepository = UnitOfWork.AccountRepository;
         }
 
-        public override IEnumerable<AccountModel> GetAll()
+        public override IEnumerable<AccountModel> GetAll(Filter filter = null)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<Account, AccountModel>());
-            return Mapper.Map<IEnumerable<Account>, IEnumerable<AccountModel>>(_accountRepository.GetAll());
+            if (filter == null) filter = new Filter();
+
+            var mapper = new MapperConfiguration(c => c.CreateMap<Account, AccountModel>()).CreateMapper();
+            return mapper.Map<IEnumerable<Account>, IEnumerable<AccountModel>>(_accountRepository.GetAll())
+                .Where(filter.IsValid).ToList();
         }
 
         public override AccountModel GetOne(int id)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<Account, AccountModel>());
-            return Mapper.Map<Account, AccountModel>(_accountRepository.GetOne(id));
+            var mapper = new MapperConfiguration(c => c.CreateMap<Account, AccountModel>()).CreateMapper();
+            return mapper.Map<Account, AccountModel>(_accountRepository.GetOne(id));
         }
 
         public override AccountModel Save(AccountModel entity)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<AccountModel, Account>());
-            var model = Mapper.Map<AccountModel, Account>(entity);
+            var mapper = new MapperConfiguration(c => c.CreateMap<AccountModel, Account>()).CreateMapper();
+            var model = mapper.Map<AccountModel, Account>(entity);
 
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<Account, AccountModel>());
-            return Mapper.Map<Account, AccountModel>(_accountRepository.Save(model));
+            mapper = new MapperConfiguration(c => c.CreateMap<Account, AccountModel>()).CreateMapper();
+            return mapper.Map<Account, AccountModel>(_accountRepository.Save(model));
         }
 
-        public override void Delete(AccountModel entity)
+        public override bool Delete(AccountModel entity)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<AccountModel, Account>());
-            _accountRepository.Delete(Mapper.Map<AccountModel, Account>(entity));
+            var mapper = new MapperConfiguration(c => c.CreateMap<AccountModel, Account>()).CreateMapper();
+            return _accountRepository.Delete(mapper.Map<AccountModel, Account>(entity));
         }
 
-        public override void DeleteAll()
+        public override bool DeleteAll()
         {
-            _accountRepository.DeleteAll();
+            return _accountRepository.DeleteAll();
         }
 
-        public bool Exists(AccountModel entity)
+        public AccountModel Exists(AccountModel entity)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<AccountModel, Account>());
-            var model = Mapper.Map<AccountModel, Account>(entity);
-            return _accountRepository.Exists(model, out _);
+            var mapper = new MapperConfiguration(c => c.CreateMap<AccountModel, Account>()).CreateMapper();
+            var model = mapper.Map<AccountModel, Account>(entity);
+
+            mapper = new MapperConfiguration(c => c.CreateMap<Account, AccountModel>()).CreateMapper();
+            return _accountRepository.Exists(model, out var foundModel)
+                ? mapper.Map<Account, AccountModel>(foundModel)
+                : null;
         }
     }
 }

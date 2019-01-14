@@ -27,32 +27,31 @@ namespace DataAccessLayer.Repositories
             return null;
         }
 
-        public override void DeleteAll()
+        public override bool DeleteAll()
         {
             try
             {
-                Session.CreateQuery("delete Account")
-                    .ExecuteUpdate();
+                return Session.CreateQuery("delete Account")
+                           .ExecuteUpdate() > 0;
             }
             catch (Exception e)
             {
                 Logger.Error(e);
             }
+
+            return false;
         }
 
         public override bool Exists(Account item, out Account foundItem)
         {
             try
             {
-                var list = Session.CreateQuery(@"from Account o where o.UserName = :userName" +
-                                               @" and o.PasswordHash = :hash")
+                var list = Session.CreateQuery(@"from Account o where o.UserName = :userName")
                     .SetParameter("userName", item.UserName)
-                    .SetParameter("hash", item.PasswordHash)
                     .List<Account>();
                 if (list.Count != 0)
                 {
-                    item.Id = list.First().Id;
-                    foundItem = item;
+                    foundItem = list.First();
                     return true;
                 }
             }

@@ -1,4 +1,3 @@
-using System;
 using System.Web.Http;
 using BusinessLayer.Models;
 using BusinessLayer.Services;
@@ -32,7 +31,7 @@ namespace Task5.Controllers
                 model.Account.Role.Id = role.Id;
                 _accountService.Save(model.Account);
             }
-            catch (Exception e)
+            catch
             {
                 return false;
             }
@@ -41,9 +40,13 @@ namespace Task5.Controllers
         }
 
         [HttpPost]
-        public bool SignIn(AccountModel account)
+        public AccountModel SignIn(AccountModel account)
         {
-            return _accountService.Exists(account);
+            var registeredAccount = _accountService.Exists(account);
+            return registeredAccount != null &&
+                   BCryptPasswordEncoder.Validate(account.PasswordHash, registeredAccount.PasswordHash)
+                ? registeredAccount
+                : null;
         }
     }
 }

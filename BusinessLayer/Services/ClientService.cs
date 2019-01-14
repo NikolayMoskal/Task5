@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
+using BusinessLayer.Filters;
 using BusinessLayer.Models;
 using BusinessLayer.UnitsOfWork;
 using DataAccessLayer.Entities;
@@ -16,41 +18,39 @@ namespace BusinessLayer.Services
             _repository = UnitOfWork.ClientRepository;
         }
 
-        public override IEnumerable<ClientModel> GetAll()
+        public override IEnumerable<ClientModel> GetAll(Filter filter = null)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<Client, ClientModel>());
-            return Mapper.Map<IEnumerable<Client>, IEnumerable<ClientModel>>(_repository.GetAll());
+            if (filter == null) filter = new Filter();
+
+            var mapper = new MapperConfiguration(c => c.CreateMap<Client, ClientModel>()).CreateMapper();
+            return mapper.Map<IEnumerable<Client>, IEnumerable<ClientModel>>(_repository.GetAll())
+                .Where(filter.IsValid).ToList();
         }
 
         public override ClientModel GetOne(int id)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<Client, ClientModel>());
-            return Mapper.Map<Client, ClientModel>(_repository.GetOne(id));
+            var mapper = new MapperConfiguration(c => c.CreateMap<Client, ClientModel>()).CreateMapper();
+            return mapper.Map<Client, ClientModel>(_repository.GetOne(id));
         }
 
         public override ClientModel Save(ClientModel entity)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<ClientModel, Client>());
-            var item = Mapper.Map<ClientModel, Client>(entity);
+            var mapper = new MapperConfiguration(c => c.CreateMap<ClientModel, Client>()).CreateMapper();
+            var item = mapper.Map<ClientModel, Client>(entity);
 
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<Client, ClientModel>());
-            return Mapper.Map<Client, ClientModel>(_repository.Save(item));
+            mapper = new MapperConfiguration(c => c.CreateMap<Client, ClientModel>()).CreateMapper();
+            return mapper.Map<Client, ClientModel>(_repository.Save(item));
         }
 
-        public override void Delete(ClientModel entity)
+        public override bool Delete(ClientModel entity)
         {
-            Mapper.Reset();
-            Mapper.Initialize(c => c.CreateMap<ClientModel, Client>());
-            _repository.Delete(Mapper.Map<ClientModel, Client>(entity));
+            var mapper = new MapperConfiguration(c => c.CreateMap<ClientModel, Client>()).CreateMapper();
+            return _repository.Delete(mapper.Map<ClientModel, Client>(entity));
         }
 
-        public override void DeleteAll()
+        public override bool DeleteAll()
         {
-            _repository.DeleteAll();
+            return _repository.DeleteAll();
         }
     }
 }

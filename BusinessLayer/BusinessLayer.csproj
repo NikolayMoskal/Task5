@@ -104,6 +104,11 @@
     <ItemGroup>
         <Compile Include="CsvFileWatcher.cs"/>
         <Compile Include="FileHandler.cs"/>
+        <Compile Include="Filters\BookingFilter.cs"/>
+        <Compile Include="Filters\ClientFilter.cs"/>
+        <Compile Include="Filters\EmployeeFilter.cs"/>
+        <Compile Include="Filters\Filter.cs"/>
+        <Compile Include="Filters\ProductFilter.cs"/>
         <Compile Include="Models\AccountModel.cs"/>
         <Compile Include="Models\BookingModel.cs"/>
         <Compile Include="Models\ClientModel.cs"/>

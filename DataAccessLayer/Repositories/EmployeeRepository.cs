@@ -27,17 +27,19 @@ namespace DataAccessLayer.Repositories
             return null;
         }
 
-        public override void DeleteAll()
+        public override bool DeleteAll()
         {
             try
             {
-                Session.CreateQuery("delete Employee")
-                    .ExecuteUpdate();
+                return Session.CreateQuery("delete Employee")
+                           .ExecuteUpdate() > 0;
             }
             catch (Exception e)
             {
                 Logger.Error(e);
             }
+
+            return false;
         }
 
         public override bool Exists(Employee item, out Employee foundItem)

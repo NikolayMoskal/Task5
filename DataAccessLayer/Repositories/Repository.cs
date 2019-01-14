@@ -55,20 +55,24 @@ namespace DataAccessLayer.Repositories
             return null;
         }
 
-        public virtual void Delete(TEntity item)
+        public virtual bool Delete(TEntity item)
         {
             try
             {
                 Session.Delete(item);
+                return true;
             }
             catch (Exception e)
             {
                 Logger.Error(e);
             }
+
+            return false;
         }
 
-        public virtual void DeleteAll()
+        public virtual bool DeleteAll()
         {
+            return true;
         }
 
         public virtual bool Exists(TEntity item, out TEntity foundItem)

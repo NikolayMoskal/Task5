@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using BusinessLayer.Filters;
 using BusinessLayer.Models;
 using BusinessLayer.UnitsOfWork;
 
@@ -14,14 +15,14 @@ namespace BusinessLayer.Services
             UnitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public abstract IEnumerable<TEntity> GetAll();
+        public abstract IEnumerable<TEntity> GetAll(Filter filter = null);
 
         public abstract TEntity GetOne(int id);
 
         public abstract TEntity Save(TEntity entity);
 
-        public abstract void Delete(TEntity entity);
+        public abstract bool Delete(TEntity entity);
 
-        public abstract void DeleteAll();
+        public abstract bool DeleteAll();
     }
 }
